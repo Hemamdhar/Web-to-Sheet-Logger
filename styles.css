@@ -1,0 +1,9 @@
+.websheet-button {
+  padding: 5px 10px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
