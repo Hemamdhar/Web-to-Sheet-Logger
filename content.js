@@ -10,42 +10,46 @@ function showSaveButton(x, y, text) {
 
   const btn = document.createElement("button");
   btn.innerText = "Save to Sheet";
+  btn.className = "websheet-button";
   btn.style.position = "absolute";
   btn.style.left = `${x}px`;
   btn.style.top = `${y}px`;
-  btn.style.zIndex = 10000;
-  btn.className = "websheet-button";
+  btn.style.zIndex = 9999;
   document.body.appendChild(btn);
 
   btn.onclick = () => {
     const data = {
-      text,
+      text: text,
       url: window.location.href,
       title: document.title,
       timestamp: new Date().toISOString(),
     };
-    sendToGoogleSheet(data);
+
+    fetch(
+      "https://script.google.com/macros/s/AKfycbwd3x9ybetiItYp3E586QadlZWJtKSxN-AOqNpcmcHg/exec",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((res) => res.text())
+      .then((response) => {
+        alert("✅ Saved to Sheet!");
+        console.log("Server says:", response);
+      })
+      .catch((err) => {
+        alert("❌ Error saving.");
+        console.error("Error:", err);
+      });
+
     btn.remove();
   };
 }
 
 function removeExistingButton() {
-  const oldBtn = document.querySelector(".websheet-button");
-  if (oldBtn) oldBtn.remove();
-}
-
-function sendToGoogleSheet(data) {
-  fetch(
-    "https://script.google.com/macros/s/AKfycbwd3x9ybetiItYp3E586QadlZWJtKSxN-AOqNpcmcHg/exec",
-    {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((res) => res.text())
-    .then((response) => alert("✅ Saved to Sheet!"))
-    .catch((error) => alert("❌ Error saving: " + error));
+  const existing = document.querySelector(".websheet-button");
+  if (existing) existing.remove();
 }
